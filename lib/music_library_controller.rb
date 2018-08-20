@@ -33,11 +33,11 @@ class MusicLibraryController
         list_songs_by_genre
       when "play song"
         play_song
+        puts Song.all
       else
       end
     end
   end
-
   def sort_alphabetically(a)
     a.sort {|a, b| a.name <=> b.name}
   end
@@ -45,6 +45,7 @@ class MusicLibraryController
   def list_all(a)
     sort_alphabetically(a).each_with_index do |obj, index|
       puts "#{index + 1}. #{yield(obj)}"
+      puts yield(obj, index)
     end
   end
 
@@ -56,18 +57,24 @@ class MusicLibraryController
   def list_songs
     list_all(Song.all) do |song|
       "#{song.artist.name} - #{song.name} - #{song.genre.name}"
+    list_all(Song.all) do |song, index|
+      "#{index + 1}. #{song.artist.name} - #{song.name} - #{song.genre.name}"
     end
   end
 
   def list_artists
     list_all(Artist.all) do |artist|
       "#{artist.name}"
+    list_all(Artist.all) do |artist, index|
+      "#{index + 1}. #{artist.name}"
     end
   end
 
   def list_genres
     list_all(Genre.all) do |genre|
       "#{genre.name}"
+    list_all(Genre.all) do |genre, index|
+      "#{index + 1}. #{genre.name}"
     end
   end
 
@@ -76,6 +83,8 @@ class MusicLibraryController
     if artist
       list_all(artist.songs) do |song|
         "#{song.name} - #{song.genre.name}"
+      list_all(artist.songs) do |song, index|
+        "#{index + 1}. #{song.name} - #{song.genre.name}"
       end
     end
   end
@@ -85,6 +94,8 @@ class MusicLibraryController
     if genre
       list_all(genre.songs) do |song|
         "#{song.artist.name} - #{song.name}"
+      list_all(genre.songs) do |song, index|
+        "#{index + 1}. #{song.artist.name} - #{song.name}"
       end
     end
   end
@@ -94,6 +105,8 @@ class MusicLibraryController
     song_number = prompt_user("Which song number would you like to play?").to_i
     song = song_number > 0 ? song = song_list[song_number - 1] : nil
 
+    song_number = prompt_user("Which song number would you like to play?")
+    song = song_list[song_number - 1]
     if song
       puts "Playing #{song.name} by #{song.artist.name}"
     end
